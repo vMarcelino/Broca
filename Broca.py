@@ -8,30 +8,44 @@ def MainCodeExecution():
     b = ExpressionVariable("b", "")
     c = ExpressionVariable("c", "")
 
-    finalExpression = ExpressionBlock([
-        ExpressionBlock([
-            BasicExpressionBlock([a], "NOT"),
-            BasicExpressionBlock([b], "NOT"),
-            BasicExpressionBlock([c], "")],
-            "OR"),
-        BasicExpressionBlock([
-            a,
-            b,
-            c],
-            "OR")],
-        "AND")
+    finalExpression = ExpressionBlock(
+        [
+            ExpressionBlock(
+                [
+                    BasicExpressionBlock([a], "NOT"),
+                    BasicExpressionBlock([b], "NOT"),
+                    BasicExpressionBlock([c], "")
+                ],
+                "OR"
+            ),
+            BasicExpressionBlock(
+                [
+                    a,
+                    b,
+                    c
+                ],
+                "OR"
+            )
+
+        ],
+        "AND"
+    )
 
     finalExpression.print()
-    print("\nFunciona??")
+    print("\nFunciona!")
 
 
 class ExpressionBlock:
-    expressionBlocks = []  # ExpBlock
-    basicExpressionBlocks = []  # BasicExpBlock
-    operator = ""
+    # expressionBlocks = []  # ExpBlock
+    # basicExpressionBlocks = []  # BasicExpBlock
+    # operator = ""
+    # tempName = ""
 
-    def __init__(self, expressions, op):
+    def __init__(self, expressions, op, namae):
         self.operator = op
+        self.tempName = namae
+        self.expressionBlocks = []
+        self.basicExpressionBlocks = []
         for expression in expressions:
             if type(expression) is ExpressionBlock:
                 self.expressionBlocks.append(expression)
@@ -39,7 +53,7 @@ class ExpressionBlock:
                 self.basicExpressionBlocks.append(expression)
 
     def print(self):
-        print("(",end="")
+        print("(", end="")
         for i in range(len(self.expressionBlocks) + len(self.basicExpressionBlocks)):
             if i < len(self.expressionBlocks):
                 self.expressionBlocks[i].print()
@@ -55,8 +69,8 @@ class ExpressionBlock:
 
 
 class BasicExpressionBlock:
-    expressionVariables = []  # expVar
-    operator = ""
+    # expressionVariables = []  # expVar
+    # operator = ""
 
     def __init__(self, expvs, op):
         self.expressionVariables = expvs
@@ -77,33 +91,24 @@ class BasicExpressionBlock:
 
 
 class ExpressionVariable:
-    variableName = ""  # string
-    value = ""  # bool?
+    # variableName = ""  # string
+    # value = ""  # bool?
 
     def __init__(self, name, val):
         self.variableName = name
-        self.value =  val
+        self.value = val
+        self.index = len(ExpressionVariableDatabase().expressionVariables)
+        ExpressionVariableDatabase().expressionVariables.append(self)
 
     def print(self):
         print(self.variableName, end="")
 
 
 class ExpressionVariableDatabase:
-    indexer = []  # varReferencer
     expressionVariables = []  # expVar
 
-    def __init__(self, idx, expvs):
-        self.indexer = idx
+    def __init__(self, expvs):
         self.expressionVariables = expvs
-
-
-class VariableReferencer:
-    variableName = ""  # string
-    variableIndex = 0  # int
-
-    def __init__(self, name, index):
-        self.variableName = name
-        self.variableIndex = index
 
 
 if __name__ == "__main__":
