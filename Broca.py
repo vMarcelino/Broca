@@ -12,8 +12,12 @@ def MainCodeExecution():
 
     e0 = ExpressionVariable("e0")
     e1 = ExpressionVariable("e1")
+    e2 = ExpressionVariable("e2")
+
     d0 = ExpressionVariable("d0")
     d1 = ExpressionVariable("d1")
+    d2 = ExpressionVariable("d2")
+
     c0 = ExpressionBlock([e0, d0], Operators.XOR)
     k0 = ExpressionBlock([ExpressionVariable("LITERAL", 0), ExpressionVariable("LITERAL", 0)], Operators.XOR)
     k0 = k0.doMaths()
@@ -31,6 +35,12 @@ def MainCodeExecution():
             Operators.AND)],
         Operators.OR)
 
+    c1 = ExpressionBlock([
+        e1,
+        d1,
+        k1],
+        Operators.XOR)
+
     k2 = ExpressionBlock([
         ExpressionBlock([
             ExpressionBlock([
@@ -45,21 +55,60 @@ def MainCodeExecution():
             Operators.AND)],
         Operators.OR)
 
+    c2 = ExpressionBlock([
+        e2,
+        d2,
+        k2],
+        Operators.XOR)
+
+    c0.optimize(True)
+    k1.optimize(True)
+    c1.optimize(True)
+    k2.optimize(True)
+    c2.optimize(True)
     print("c0 = " + c0.print())
     print("k1 = " + k1.print())
+    print("c1 = " + c1.print())
+    print("k2 = " + k2.print())
+    print("c2 = " + c2.print())
     print("Running maths...")
     c0 = c0.doMaths()
     k1 = k1.doMaths()
+    c1 = c1.doMaths()
+    k2 = k2.doMaths()
+    c2 = c2.doMaths()
     print("c0 = " + c0.print())
     print("k1 = " + k1.print())
+    print("c1 = " + c1.print())
+    print("k2 = " + k2.print())
+    print("c2 = " + c2.print())
 
-    e0.setValue(0)
+    e0.setValue(int(input("Valor de e0: ")))
 
     print("Running maths...")
     c0 = c0.doMaths()
     k1 = k1.doMaths()
+    c1 = c1.doMaths()
+    k2 = k2.doMaths()
+    c2 = c2.doMaths()
     print("c0 = " + c0.print())
     print("k1 = " + k1.print())
+    print("c1 = " + c1.print())
+    print("k2 = " + k2.print())
+    print("c2 = " + c2.print())
+
+    e1.setValue(int(input("Valor de e1: ")))
+
+    c0 = c0.doMaths()
+    k1 = k1.doMaths()
+    c1 = c1.doMaths()
+    k2 = k2.doMaths()
+    c2 = c2.doMaths()
+    print("c0 = " + c0.print())
+    print("k1 = " + k1.print())
+    print("c1 = " + c1.print())
+    print("k2 = " + k2.print())
+    print("c2 = " + c2.print())
 
     print("\nFunciona!")
 
@@ -90,23 +139,26 @@ class ExpressionBlock:
                 self.expressionBlocks.append(expression)
 
         self.optimize()
-        self.formatXor(checkChild=True)
+        newSelf = self.formatXor(checkChild=True)
+        self.basicExpressionBlocks = newSelf.basicExpressionBlocks
+        self.expressionBlocks = newSelf.expressionBlocks
+        self.operator = newSelf.operator
+        newSelf = self.convertXor()
+        self.basicExpressionBlocks = newSelf.basicExpressionBlocks
+        self.expressionBlocks = newSelf.expressionBlocks
+        self.operator = newSelf.operator
 
     def __str__(self):
         return self.print("")
 
     def print(self, str=""):
         str += "E(" if showClass else "("
-        for i in range(len(self.expressionBlocks) + len(self.basicExpressionBlocks)):
-            if i < len(self.expressionBlocks):
-                str += self.expressionBlocks[i].print()
-
-            else:
-                i2 = i - len(self.expressionBlocks)
-                str += self.basicExpressionBlocks[i2].print()
-
+        i = 0
+        for expression in self.expressionBlocks + self.basicExpressionBlocks:
+            str += expression.print()
             if i < (len(self.expressionBlocks) + len(self.basicExpressionBlocks) - 1):
                 str += " " + self.operator.value + " "
+            i += 1
 
         str += ")"
         return str
@@ -134,25 +186,25 @@ class ExpressionBlock:
                     self.expressionBlocks.pop(i - r)
                     r += 1
 
-        # Join Basic Expression Blocks (BEB or BaEB or Bae) with the same operator into one
-        for i in range(len(self.basicExpressionBlocks) - 1):
-            if self.basicExpressionBlocks[i].operator == Operators.NOT:
-                continue
+        # Join Basic Expression Blocks (BEB or BaEB or Bae) with the same operator into one (WRONG!!!!!)
+        # for i in range(len(self.basicExpressionBlocks) - 1):
+        #    if self.basicExpressionBlocks[i].operator == Operators.NOT:
+        #        continue
 
-            if self.basicExpressionBlocks[i].operator == Operators.NoOperator and len(self.basicExpressionBlocks[i].expressionVariables) > 0:
-                for j in range(i + 1, len(self.basicExpressionBlocks)):
-                    if self.basicExpressionBlocks[j].operator == Operators.NoOperator:
-                        self.basicExpressionBlocks[i] = BasicExpressionBlock((
-                            self.basicExpressionBlocks[i].expressionVariables +
-                            self.basicExpressionBlocks[j].expressionVariables),
-                            self.operator)
-                        self.basicExpressionBlocks[j] = BasicExpressionBlock([], Operators.NoOperator)
+        #   if self.basicExpressionBlocks[i].operator == Operators.NoOperator and len(self.basicExpressionBlocks[i].expressionVariables) > 0:
+        #        for j in range(i + 1, len(self.basicExpressionBlocks)):
+        #            if self.basicExpressionBlocks[j].operator == Operators.NoOperator:
+        #                self.basicExpressionBlocks[i] = BasicExpressionBlock((
+        #                    self.basicExpressionBlocks[i].expressionVariables +
+        #                    self.basicExpressionBlocks[j].expressionVariables),
+        #                    self.operator)
+        #                self.basicExpressionBlocks[j] = BasicExpressionBlock([], Operators.NoOperator)
 
-            if self.basicExpressionBlocks[i].operator != Operators.NoOperator:
-                for j in range(i + 1, len(self.basicExpressionBlocks)):
-                    if self.basicExpressionBlocks[i].operator == self.basicExpressionBlocks[j].operator:
-                        self.basicExpressionBlocks[i].expressionVariables += self.basicExpressionBlocks[j].expressionVariables
-                        self.basicExpressionBlocks[j] = BasicExpressionBlock([], Operators.NoOperator)
+        #    if self.basicExpressionBlocks[i].operator != Operators.NoOperator:
+        #        for j in range(i + 1, len(self.basicExpressionBlocks)):
+        #            if self.basicExpressionBlocks[i].operator == self.basicExpressionBlocks[j].operator:
+        #                self.basicExpressionBlocks[i].expressionVariables += self.basicExpressionBlocks[j].expressionVariables
+        #                self.basicExpressionBlocks[j] = BasicExpressionBlock([], Operators.NoOperator)
 
         # Remove empty Basic Expression Blocks (BEB or BaEB or Bae)
         r = 0
@@ -164,9 +216,10 @@ class ExpressionBlock:
 
         if len(self.expressionBlocks) == 1 and len(self.basicExpressionBlocks) == 0 and self.operator != Operators.NOT:
             holder = self.expressionBlocks[0]
-            self.expressionBlocks = holder.expressionBlocks
-            self.basicExpressionBlocks = holder.basicExpressionBlocks
-            self.operator = holder.operator
+            if type(holder) is not Not:
+                self.expressionBlocks = holder.expressionBlocks
+                self.basicExpressionBlocks = holder.basicExpressionBlocks
+                self.operator = holder.operator
 
     def formatXor(self, checkChild=False):
         if checkChild:
@@ -185,6 +238,8 @@ class ExpressionBlock:
                     newBae.append(exp)
                 elif type(exp) is ExpressionBlock:
                     newEB.append(exp)
+                else:
+                    newEB.append(exp)
 
             self.basicExpressionBlocks = newBae
             self.expressionBlocks = newEB
@@ -196,9 +251,41 @@ class ExpressionBlock:
                 exp.append(remainingEB[i])
 
             remainingEB = list(set(remainingEB) - set(exp))
-            return ExpressionBlock([remainingEB, ExpressionBlock(exp, Operators.XOR)], Operators.XOR)
+            return ExpressionBlock(remainingEB + [ExpressionBlock(exp, Operators.XOR)], Operators.XOR)
         else:
             return self
+
+    def convertXor(self):
+        for i in range(len(self.expressionBlocks)):
+            self.expressionBlocks[i] = self.expressionBlocks[i].convertXor()
+
+        for i in range(len(self.basicExpressionBlocks)):
+            self.basicExpressionBlocks[i] = self.basicExpressionBlocks[i].convertXor()
+
+        if len(self.expressionBlocks + self.basicExpressionBlocks) != 2 and self.operator == Operators.XOR:
+            print("WRONG!!!!!!!!!!!!!!!!!!!!!")
+
+        self.optimize()
+        self.formatXor()
+        self.optimize()
+
+        if self.operator != Operators.XOR:
+            return self
+        else:
+            # A XOR B = (A + B) * !(A * B)
+            A = (self.expressionBlocks + self.basicExpressionBlocks)[0]
+            B = (self.expressionBlocks + self.basicExpressionBlocks)[1]
+            return ExpressionBlock([
+                ExpressionBlock([
+                    A,
+                    B],
+                    Operators.OR),
+                Not(
+                    ExpressionBlock([
+                        A,
+                        B],
+                        Operators.AND))],
+                Operators.AND)
 
     def doMaths(self):
         expressions = []
@@ -208,7 +295,7 @@ class ExpressionBlock:
         if len(expressions) > 1:
             if self.operator == Operators.XOR:
                 if expressions[0].isDefined() and expressions[1].isDefined():
-                    v0, v1 = expressions[0].value, expressions[1].value
+                    v0, v1 = expressions[0].getValue(), expressions[1].getValue()
                     val = v0 + v1 - 2 * v0 * v1
                     return BasicExpressionBlock([ExpressionVariable("LITERAL", val)], Operators.NoOperator).doMaths()
                 elif expressions[1].isDefined():
@@ -244,9 +331,10 @@ class ExpressionBlock:
                 isOne = False
                 remainingVariables = []
                 for expressionVariable in expressions:
-                    if expressionVariable.getValue() == 1:
-                        isOne = True
-                        break
+                    if expressionVariable.isDefined():
+                        if expressionVariable.getValue() == 1:
+                            isOne = True
+                            break
                     elif not expressionVariable.isDefined():
                         remainingVariables.append(expressionVariable)
 
@@ -258,7 +346,7 @@ class ExpressionBlock:
                     return ExpressionBlock(remainingVariables, Operators.OR)
 
         if self.operator == Operators.NOT:
-            return Not(expression[0]).doMaths()
+            return Not(expressions[0]).doMaths()
 
         return ExpressionBlock(expressions, Operators.NoOperator)
 
@@ -287,7 +375,12 @@ class Not:
         return self.print("")
 
     def formatXor(self, checkChild=False):
-        self.expression.formatXor(checkChild)
+        self.expression = self.expression.formatXor(checkChild)
+        return self
+
+    def convertXor(self):
+        self.expression = self.expression.convertXor()
+        return self
 
     def isDefined(self):
         return self.expression.isDefined()
@@ -303,15 +396,21 @@ class Not:
         self.expression.optimize(fullOptimize)
 
     def doMaths(self):
-        if type(self.expression) is Not:
-            return self.expression.doMaths()
-        elif type(self.expression) is ExpressionVariable:
-            if self.expression.isDefined():
-                return BasicExpressionBlock([ExpressionVariable("LITERAL", 1 - self.expression.value)], Operators.NoOperator)
+        exp = optimize(self.expression.doMaths())
+        if type(exp) is Not:
+            return exp.expression
+        elif type(exp) is ExpressionVariable:
+            if exp.isDefined():
+                return BasicExpressionBlock([ExpressionVariable("LITERAL", 1 - exp.value)], Operators.NoOperator)
             else:
-                return self
+                return Not(exp)
+        elif type(exp) is BasicExpressionBlock:
+            if len(exp.expressionVariables) == 1 and exp.expressionVariables[0].isDefined():
+                return BasicExpressionBlock([ExpressionVariable("LITERAL", 1 - exp.expressionVariables[0].getValue())], Operators.NoOperator)
+            else:
+                return Not(exp)
         else:
-            return Not(self.expression.doMaths())
+            return Not(exp)
 
 
 class BasicExpressionBlock:
@@ -348,7 +447,7 @@ class BasicExpressionBlock:
     def optimize(self, fullOptimize=False):  # Where simple maths are applied
         self.expressionVariables = list(set(self.expressionVariables))
 
-    def formatXor(self):
+    def formatXor(self, checkChild = False):
         if self.operator == Operators.XOR and len(self.expressionVariables) > 2:
             remainingEV = self.expressionVariables
             exp = []
@@ -360,6 +459,27 @@ class BasicExpressionBlock:
             return ExpressionBlock(remainingEV, Operators.XOR)
         else:
             return self
+
+    def convertXor(self):
+        for i in range(len(self.expressionVariables)):
+            self.expressionVariables[i] = self.expressionVariables[i].convertXor()
+
+        if self.operator != Operators.XOR:
+            return self
+        else:
+            A = self.expressionVariables[0]
+            B = self.expressionVariables[1]
+            return ExpressionBlock([
+                ExpressionBlock([
+                    A,
+                    B],
+                    Operators.OR),
+                Not(
+                    ExpressionBlock([
+                        A,
+                        B],
+                        Operators.AND))],
+                Operators.AND)
 
     def doMaths(self):
         if self.operator == Operators.XOR:
@@ -478,6 +598,9 @@ class ExpressionVariable:
     def isDefined(self):
         return self.isdefined
 
+    def convertXor(self):
+        return self
+
 
 class ExpressionVariableDatabase:
     expressionVariables = []  # expVar
@@ -498,6 +621,22 @@ class Operators(Enum):
     OR = "OR"
     XOR = "XOR"
     NoOperator = ""
+
+
+def optimize(expression):
+    if type(expression) is ExpressionBlock:
+        if len(expression.expressionBlocks) == 0 and len(expression.basicExpressionBlocks) == 1:
+            return expression.basicExpressionBlocks[0]
+        elif len(expression.expressionBlocks) == 1 and len(expression.basicExpressionBlocks) == 0:
+            return expression.expressionBlocks[0]
+        else:
+            return expression
+    if type(expression) is BasicExpressionBlock:
+        return expression
+    if type(expression) is Not:
+        return optimize(expression.expression)
+    if type(expression) is ExpressionVariable:
+        return expression
 
 
 if __name__ == "__main__":
