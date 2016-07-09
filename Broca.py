@@ -30,26 +30,26 @@ def MainCodeExecution():
     k0 = ExpressionBlock([ExpressionVariable("LITERAL", 0), ExpressionVariable("LITERAL", 0)], Operators.XOR)
     k0 = k0.doMaths()
 
-    k1 = kTemplate(k0,e0,d0)
-    c1 = cTemplate(k1,e1,d1
-                   )
-    k2 = kTemplate(k1,e1,d1)
-    c2 = cTemplate(e2,d2,k2)
+    k1 = kTemplate(k0, c0, d0)
+    c1 = cTemplate(k1, e1, d1)
 
-    k3 = kTemplate(k2,d2,e2)
-    c3 = cTemplate(k3,d3,e3)
+    k2 = kTemplate(k1, c1, d1)
+    c2 = cTemplate(e2, d2, k2)
+
+    k3 = kTemplate(k2, d2, c2)
+    c3 = cTemplate(k3, d3, e3)
 
     l0 = k0
     a0 = ExpressionBlock([c0, b0], Operators.XOR)
 
-    l1 = kTemplate(l0,c0,b0)
-    a1 = cTemplate(l1,b1,c1)
+    l1 = kTemplate(l0, c0, b0)
+    a1 = cTemplate(l1, b1, c1)
 
-    l2 = kTemplate(l1,c1,b1)
-    a2 = cTemplate(l2,c2,b2)
+    l2 = kTemplate(l1, c1, b1)
+    a2 = cTemplate(l2, c2, b2)
 
-    l3 = kTemplate(l2,c2,b2)
-    a3 = cTemplate(l3,c3,b3)
+    l3 = kTemplate(l2, c2, b2)
+    a3 = cTemplate(l3, c3, b3)
 
     functions = [c0, "c0", c1, "c1", c2, "c2", c3, "c3", k0, "k0", k1, "k1", k2, "k2", k3, "k3", a0, "a0", a1, "a1", a2, "a2", a3, "a3", l0, "l0", l1, "l1", l2,
                  "l2", l3, "l3"]
@@ -70,14 +70,14 @@ def MainCodeExecution():
         ExpressionVariableDatabase.getVariableWithName(input("Nome da variavel: ")).setValue(int(input("Valor da variável: ")))
         doMaths(functions)
         printThings(functions)
-        #a0 = a0.doMaths()
-        #a1 = a1.doMaths()
-        #a2 = a2.doMaths()
-        #a3 = a3.doMaths()
-        #print(a0.print())
-        #print(a1.print())
-        #print(a2.print())
-        #print(a3.print())
+        # a0 = a0.doMaths()
+        # a1 = a1.doMaths()
+        # a2 = a2.doMaths()
+        # a3 = a3.doMaths()
+        # print(a0.print())
+        # print(a1.print())
+        # print(a2.print())
+        # print(a3.print())
 
     print("\n NAO Funciona!!!")
 
@@ -91,14 +91,17 @@ def doMaths(fncs):
     for i in range(int(len(fncs) / 2)):
         fncs[i * 2] = fncs[i * 2].doMaths()
 
-def kTemplate(k, e, d):
-    t1 = ExpressionBlock([k,e],Operators.AND)
-    t2 = ExpressionBlock([k,d],Operators.AND)
-    t3 = ExpressionBlock([e,d],Operators.AND)
-    return ExpressionBlock([t1,t2,t3],Operators.OR)
+
+def kTemplate(k, c, d):
+    kc = ExpressionBlock([k, c], Operators.AND)
+    kd = ExpressionBlock([k, d], Operators.AND)
+    cd = ExpressionBlock([c, d], Operators.AND)
+    return ExpressionBlock([kc, kd, cd], Operators.OR)
+
 
 def cTemplate(e, d, k):
-    return ExpressionBlock([e,d,k],Operators.XOR)
+    return ExpressionBlock([e, d, k], Operators.XOR)
+
 
 class ExpressionBlock:
     # expressionBlocks = []  # ExpBlock
