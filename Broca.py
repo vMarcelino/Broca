@@ -2,7 +2,7 @@ from enum import Enum
 
 print("Projeto broca!")
 
-showClass = 0 == 1
+showClass = 1 == 0
 
 
 def MainCodeExecution():
@@ -42,13 +42,13 @@ def MainCodeExecution():
     l0 = k0
     a0 = ExpressionBlock([c0, b0], Operators.XOR)
 
-    l1 = kTemplate(l0, c0, b0)
+    l1 = kTemplate(l0, a0, b0)
     a1 = cTemplate(l1, b1, c1)
 
-    l2 = kTemplate(l1, c1, b1)
+    l2 = kTemplate(l1, a1, b1)
     a2 = cTemplate(l2, c2, b2)
 
-    l3 = kTemplate(l2, c2, b2)
+    l3 = kTemplate(l2, a2, b2)
     a3 = cTemplate(l3, c3, b3)
 
     functions = [c0, "c0", c1, "c1", c2, "c2", c3, "c3", k0, "k0", k1, "k1", k2, "k2", k3, "k3", a0, "a0", a1, "a1", a2, "a2", a3, "a3", l0, "l0", l1, "l1", l2,
@@ -79,7 +79,7 @@ def MainCodeExecution():
         # print(a2.print())
         # print(a3.print())
 
-    print("\n NAO Funciona!!!")
+    print("\n Funciona!!!")
 
 
 def printThings(fncs):
@@ -196,8 +196,8 @@ class ExpressionBlock:
         #                self.basicExpressionBlocks[i].expressionVariables += self.basicExpressionBlocks[j].expressionVariables
         #                self.basicExpressionBlocks[j] = BasicExpressionBlock([], Operators.NoOperator)
 
-        # Remove empty Basic Expression Blocks (BEB or BaEB or Bae)
         r = 0
+        # Remove empty Basic Expression Blocks (BEB or BaEB or Bae)
         for i in range(len(self.basicExpressionBlocks)):
             if i - r < len(self.basicExpressionBlocks):
                 if len(self.basicExpressionBlocks[i - r].expressionVariables) == 0:
@@ -300,6 +300,7 @@ class ExpressionBlock:
                         return ExpressionBlock([expressions[1]], self.operator)
                 else:
                     return ExpressionBlock(expressions, self.operator)
+
             if self.operator == Operators.AND:
                 isZero = False
                 remainingVariables = []
@@ -309,6 +310,8 @@ class ExpressionBlock:
                         break
                     elif not expressionVariable.isDefined():
                         remainingVariables.append(expressionVariable)
+
+                remainingVariables = list(set(remainingVariables))
 
                 if isZero:
                     return BasicExpressionBlock([ExpressionVariable("LITERAL", 0)], Operators.NoOperator)
@@ -327,6 +330,8 @@ class ExpressionBlock:
                             break
                     elif not expressionVariable.isDefined():
                         remainingVariables.append(expressionVariable)
+
+                remainingVariables = list(set(remainingVariables))
 
                 if isOne:
                     return BasicExpressionBlock([ExpressionVariable("LITERAL", 1)], Operators.NoOperator)
@@ -502,6 +507,7 @@ class BasicExpressionBlock:
                 elif not expressionVariable.isDefined():
                     remainingVariables.append(expressionVariable)
 
+            remainingVariables = list(set(remainingVariables))
             if isZero:
                 return BasicExpressionBlock([ExpressionVariable("LITERAL", 0)], Operators.NoOperator)
             elif len(remainingVariables) == 0:
@@ -519,6 +525,7 @@ class BasicExpressionBlock:
                 elif not expressionVariable.isDefined():
                     remainingVariables.append(expressionVariable)
 
+            remainingVariables = list(set(remainingVariables))
             if isOne:
                 return BasicExpressionBlock([ExpressionVariable("LITERAL", 1)], Operators.NoOperator)
             elif len(remainingVariables) == 0:
